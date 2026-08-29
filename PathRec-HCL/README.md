@@ -1,4 +1,4 @@
-# PathRec API — Person 1 + Person 3 combined
+# PathRec API 
 
 Wraps the skill graph (Person 1) and course retrieval (Person 3) as HTTP
 endpoints so the frontend (Person 5) and LLM layer (Person 4) can call
