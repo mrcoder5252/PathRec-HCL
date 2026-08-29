@@ -7,6 +7,7 @@ Day 2 will add: domain filtering + merge into final {skill_id: confidence} dict
 import os
 import json
 import random
+import requests
 from dotenv import load_dotenv
 import google.generativeai as genai
  
@@ -18,7 +19,7 @@ model = genai.GenerativeModel("gemini-3.6-flash")
 # 1. Load the question bank
 # ---------------------------------------------------------------------------
  
-with open("quiz_questions.json") as f:
+with open(os.path.join(os.path.dirname(__file__), "quiz_questions.json")) as f:
     QUESTION_BANK = json.load(f)
  
 DIFFICULTY_ORDER = ["easy", "medium", "hard"]
@@ -172,14 +173,120 @@ def real_llm_call(prompt):
  
  
 # ---------------------------------------------------------------------------
-# 6. Quick manual test — run this file directly to see it work
+# 6. Domain filtering (Day 2 -> now live, calls Person 1's API)
+# ---------------------------------------------------------------------------
+# Person 1's skill_graph API is the source of truth for domain -> skill_ids.
+# We keep a small local fallback map (using their REAL skill_ids, confirmed
+# against skills_template.csv) in case the API isn't reachable — e.g. testing
+# offline, or Person 1's server isn't running yet.
+ 
+PATHREC_API_BASE = os.getenv("PATHREC_API_BASE", "http://127.0.0.1:8000")
+ 
+FALLBACK_DOMAIN_SKILL_MAP = {
+    "backend": [
+        "py_basics", "sql_basics", "rest_apis", "auth",
+        "deployment", "system_design_basics",
+    ],
+}
+ 
+ 
+def get_allowed_skills_for_domain(domain):
+    """
+    Returns the list of skill_ids relevant to a given domain, for use as
+    StaircaseQuiz(allowed_skill_ids=...).
+ 
+    Tries Person 1's live API first (GET /skills/domain/{domain}) so the quiz
+    always matches their real, current skill graph. Falls back to a small
+    local map if the API isn't reachable, so this function never breaks the
+    pipeline even if their server is down.
+    """
+    try:
+        resp = requests.get(f"{PATHREC_API_BASE}/skills/domain/{domain}", timeout=3)
+        if resp.status_code == 200:
+            return resp.json()["skill_ids"]
+    except requests.exceptions.RequestException:
+        pass  # API not reachable — fall through to local fallback
+ 
+    return FALLBACK_DOMAIN_SKILL_MAP.get(domain)  # None if unknown -> no filter
+ 
+ 
+# ---------------------------------------------------------------------------
+# 7. Clean LearnerProfile output for Person 1 (Day 2 deliverable)
+# ---------------------------------------------------------------------------
+# Converts our confidence dict into the current_skills shape from the shared
+# data contract: [{skill_id, level: beginner|intermediate|advanced}]
+ 
+def confidence_to_level(confidence):
+    """Buckets a 0-1 confidence float into a level label."""
+    if confidence >= 0.7:
+        return "advanced"
+    elif confidence >= 0.4:
+        return "intermediate"
+    else:
+        return "beginner"
+ 
+ 
+def build_learner_profile(learner_id, goal_text, target_domain, timeframe_weeks,
+                           merged_confidence, completed_courses=None):
+    """
+    Assembles the final LearnerProfile-shaped dict (minus profile_embedding,
+    which isn't Person 2's job) ready to hand to Person 1 / the backend.
+    merged_confidence: output of merge_confidence() — {skill_id: confidence_0_to_1}
+    """
+    current_skills = [
+        {"skill_id": skill_id, "level": confidence_to_level(conf)}
+        for skill_id, conf in merged_confidence.items()
+    ]
+    return {
+        "id": learner_id,
+        "goal_text": goal_text,
+        "target_domain": target_domain,
+        "timeframe_weeks": timeframe_weeks,
+        "current_skills": current_skills,
+        "completed_courses": completed_courses or [],
+    }
+ 
+ 
+# ---------------------------------------------------------------------------
+# 8. Feedback-based confidence updates (Day 3)
+# ---------------------------------------------------------------------------
+# Takes a FeedbackEvent (quiz_score | completion | skip) and adjusts that
+# skill's confidence, so the updated dict can be re-passed into get_path()
+# for re-routing. This is the "confidence needs to feed back into known_skills"
+# piece Person 1's roadmap describes.
+ 
+def apply_feedback(confidence_dict, skill_id, event_type, score=None):
+    """
+    Mutates a copy of confidence_dict based on a single FeedbackEvent and
+    returns the updated dict. Never errors out on unknown skill_ids —
+    just adds them fresh at a sensible default.
+ 
+    event_type "quiz_score": score is 0-1, blended with existing confidence
+    event_type "completion": bumps confidence up (module finished successfully)
+    event_type "skip": drops confidence — treat similarly to "too easy/too hard"
+                        signal (learner skipped, so we don't trust this skill yet)
+    """
+    updated = dict(confidence_dict)
+    existing = updated.get(skill_id, 0.3)  # default starting point if unseen
+ 
+    if event_type == "quiz_score" and score is not None:
+        # Weighted blend: new signal counts more than old, but doesn't fully overwrite
+        updated[skill_id] = round((existing * 0.4) + (score * 0.6), 2)
+    elif event_type == "completion":
+        updated[skill_id] = round(min(existing + 0.2, 1.0), 2)
+    elif event_type == "skip":
+        updated[skill_id] = round(max(existing - 0.15, 0.0), 2)
+ 
+    return updated
+ 
+ 
+# ---------------------------------------------------------------------------
+# 9. Quick manual test — run this file directly to see it work
 # ---------------------------------------------------------------------------
  
 if __name__ == "__main__":
-    quiz = StaircaseQuiz(
-    allowed_skill_ids={"python_basics", "dbms", "rest_apis", "auth", "deployment"},
-    max_questions=6
-)
+    quiz = StaircaseQuiz(max_questions=6)  # no domain filter yet, Day 1 only
+ 
     print("=== Simulated quiz run ===")
     while True:
         q = quiz.next_question()
@@ -196,17 +303,88 @@ if __name__ == "__main__":
     quiz_confidence = quiz.compute_confidence()
     print("\nQuiz-derived confidence:", quiz_confidence)
  
-    profile_message = """
-        I want to become a backend developer.
-        I have built REST APIs using Flask and know basic JWT authentication.
-        I have also worked with SQL databases.
-        """
-
-    print("\n=== Learner Profile ===")
-
-    text_conf = extract_skill_mentions(profile_message, real_llm_call)
-    final_profile = merge_confidence(quiz_confidence, text_conf)
-
-    print("Profile skill signals:", text_conf)
-    print("FINAL LEARNER PROFILE:", final_profile)
-        
+    test_messages = [
+        "I've built REST APIs with Flask and know some JWT auth basics",
+        "I've deployed apps using Docker before",
+        "I'm comfortable writing SQL queries and database schemas",
+    ]
+ 
+    print("\n=== Testing skill-mention extraction (REAL Gemini API) ===")
+    final_merged = dict(quiz_confidence)
+    for msg in test_messages:
+        text_conf = extract_skill_mentions(msg, real_llm_call)
+        final_merged = merge_confidence(final_merged, text_conf)
+        print(f"\nMessage: {msg}")
+        print("Extracted:", text_conf)
+        print("Merged with quiz confidence:", final_merged)
+ 
+    # -----------------------------------------------------------------
+    # Demo: domain filtering (Day 2)
+    # -----------------------------------------------------------------
+    print("\n=== Domain filtering demo ===")
+    domain = "backend"  # must match Person 1's real domain name in skills_template.csv
+    allowed = get_allowed_skills_for_domain(domain)
+    print(f"Allowed skill_ids for '{domain}':", allowed)
+    filtered_quiz = StaircaseQuiz(allowed_skill_ids=allowed, max_questions=6)
+    print("(A new StaircaseQuiz(allowed_skill_ids=...) instance is now scoped to this domain)")
+ 
+    # -----------------------------------------------------------------
+    # Demo: clean LearnerProfile output for Person 1
+    # -----------------------------------------------------------------
+    print("\n=== LearnerProfile output for Person 1 ===")
+    profile = build_learner_profile(
+        learner_id="learner_001",
+        goal_text="I want to become a backend developer and land an internship in 4 months",
+        target_domain=domain,
+        timeframe_weeks=16,
+        merged_confidence=final_merged,
+    )
+    print(json.dumps(profile, indent=2))
+ 
+    # -----------------------------------------------------------------
+    # Demo: feedback-based confidence update (Day 3)
+    # -----------------------------------------------------------------
+    print("\n=== Feedback loop demo ===")
+    print("Before feedback:", final_merged.get("sql_basics"))
+    updated_confidence = apply_feedback(final_merged, "sql_basics", "quiz_score", score=0.9)
+    print("After a strong SQL Basics quiz_score (0.9):", updated_confidence.get("sql_basics"))
+    updated_confidence = apply_feedback(updated_confidence, "auth", "skip")
+    print("After skipping the 'auth' module:", updated_confidence.get("auth"))
+    updated_confidence = apply_feedback(updated_confidence, "deployment", "completion")
+    print("After completing the 'deployment' module:", updated_confidence.get("deployment"))
+    print("\nFull updated confidence dict (this is what gets passed back to Person 1's get_path()):")
+    print(json.dumps(updated_confidence, indent=2))
+ 
+    # -----------------------------------------------------------------
+    # Demo: full end-to-end chain -> real call to Person 1's /roadmap API
+    # -----------------------------------------------------------------
+    # Requires Person 1's server running: uvicorn api:app --port 8000
+    print("\n=== End-to-end: calling Person 1's live /roadmap API ===")
+ 
+    CONFIDENCE_THRESHOLD = 0.5  # treat a skill as "known" above this confidence
+ 
+    known_skills = [
+        skill_id for skill_id, conf in updated_confidence.items()
+        if conf >= CONFIDENCE_THRESHOLD
+    ]
+    print(f"known_skills (confidence >= {CONFIDENCE_THRESHOLD}):", known_skills)
+ 
+    goal_skill = "deployment"  # placeholder — normally comes from Person 4's intake extraction
+    try:
+        resp = requests.post(
+            f"{PATHREC_API_BASE}/roadmap",
+            json={"known_skills": known_skills, "goal_skill": goal_skill},
+            timeout=5,
+        )
+        if resp.status_code == 200:
+            roadmap = resp.json()
+            print(f"\nRoadmap for goal '{goal_skill}':")
+            for m in roadmap["milestones"]:
+                course_title = m["courses"][0]["title"] if m["courses"] else "no course found"
+                print(f"  {m['order']}. {m['skill_name']} -> {course_title}")
+        else:
+            print(f"API returned status {resp.status_code}: {resp.text}")
+    except requests.exceptions.RequestException as e:
+        print(f"Could not reach Person 1's API at {PATHREC_API_BASE} — is their server running?")
+        print(f"(error: {e})")
+ 

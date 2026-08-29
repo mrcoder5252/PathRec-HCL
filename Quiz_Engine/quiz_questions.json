@@ -1,47 +1,72 @@
 [
   {
     "id": "q1",
-    "skill_id": "python_basics",
+    "skill_id": "py_basics",
     "difficulty": "easy",
     "question": "What does the following code print? print(type([]))",
-    "options": ["<class 'list'>", "<class 'array'>", "<class 'tuple'>", "<class 'dict'>"],
+    "options": [
+      "<class 'list'>",
+      "<class 'array'>",
+      "<class 'tuple'>",
+      "<class 'dict'>"
+    ],
     "correct": "<class 'list'>"
   },
   {
     "id": "q2",
-    "skill_id": "python_basics",
+    "skill_id": "py_basics",
     "difficulty": "medium",
     "question": "Which of these correctly defines a function with a default argument?",
-    "options": ["def f(x=5): pass", "def f(x:=5): pass", "def f(x==5): pass", "function f(x=5) {}"],
+    "options": [
+      "def f(x=5): pass",
+      "def f(x:=5): pass",
+      "def f(x==5): pass",
+      "function f(x=5) {}"
+    ],
     "correct": "def f(x=5): pass"
   },
   {
     "id": "q3",
-    "skill_id": "python_basics",
+    "skill_id": "py_basics",
     "difficulty": "hard",
     "question": "What will `list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, range(6))))` return?",
-    "options": ["[0, 4, 16]", "[0, 1, 4, 9, 16, 25]", "[4, 16]", "[0, 2, 4]"],
+    "options": [
+      "[0, 4, 16]",
+      "[0, 1, 4, 9, 16, 25]",
+      "[4, 16]",
+      "[0, 2, 4]"
+    ],
     "correct": "[0, 4, 16]"
   },
   {
     "id": "q4",
-    "skill_id": "dbms",
+    "skill_id": "sql_basics",
     "difficulty": "easy",
     "question": "What does SQL stand for?",
-    "options": ["Structured Query Language", "Sequential Query Logic", "Structured Question Language", "Simple Query Language"],
+    "options": [
+      "Structured Query Language",
+      "Sequential Query Logic",
+      "Structured Question Language",
+      "Simple Query Language"
+    ],
     "correct": "Structured Query Language"
   },
   {
     "id": "q5",
-    "skill_id": "dbms",
+    "skill_id": "sql_basics",
     "difficulty": "medium",
     "question": "Which SQL clause is used to filter grouped results?",
-    "options": ["HAVING", "WHERE", "GROUP", "FILTER"],
+    "options": [
+      "HAVING",
+      "WHERE",
+      "GROUP",
+      "FILTER"
+    ],
     "correct": "HAVING"
   },
   {
     "id": "q6",
-    "skill_id": "dbms",
+    "skill_id": "sql_basics",
     "difficulty": "hard",
     "question": "What's the main difference between a LEFT JOIN and an INNER JOIN?",
     "options": [
@@ -57,7 +82,12 @@
     "skill_id": "rest_apis",
     "difficulty": "easy",
     "question": "Which HTTP method is typically used to retrieve data from a server?",
-    "options": ["GET", "SET", "PULL", "FETCH"],
+    "options": [
+      "GET",
+      "SET",
+      "PULL",
+      "FETCH"
+    ],
     "correct": "GET"
   },
   {
@@ -65,7 +95,12 @@
     "skill_id": "rest_apis",
     "difficulty": "medium",
     "question": "What HTTP status code typically indicates a successful resource creation?",
-    "options": ["201", "200", "301", "404"],
+    "options": [
+      "201",
+      "200",
+      "301",
+      "404"
+    ],
     "correct": "201"
   },
   {
@@ -86,7 +121,12 @@
     "skill_id": "auth",
     "difficulty": "easy",
     "question": "What does JWT stand for?",
-    "options": ["JSON Web Token", "Java Web Type", "Joint Web Transfer", "JSON Web Type"],
+    "options": [
+      "JSON Web Token",
+      "Java Web Type",
+      "Joint Web Transfer",
+      "JSON Web Type"
+    ],
     "correct": "JSON Web Token"
   },
   {
@@ -120,7 +160,12 @@
     "skill_id": "deployment",
     "difficulty": "easy",
     "question": "What is Docker primarily used for?",
-    "options": ["Packaging applications into containers", "Writing frontend code", "Managing databases only", "Sending emails"],
+    "options": [
+      "Packaging applications into containers",
+      "Writing frontend code",
+      "Managing databases only",
+      "Sending emails"
+    ],
     "correct": "Packaging applications into containers"
   },
   {
@@ -180,7 +225,12 @@
     "skill_id": "system_design_basics",
     "difficulty": "hard",
     "question": "In a microservices architecture, what's a common way services communicate asynchronously?",
-    "options": ["Message queues (e.g. RabbitMQ, Kafka)", "Direct SQL queries between services", "Shared global variables", "Copy-pasting data files"],
+    "options": [
+      "Message queues (e.g. RabbitMQ, Kafka)",
+      "Direct SQL queries between services",
+      "Shared global variables",
+      "Copy-pasting data files"
+    ],
     "correct": "Message queues (e.g. RabbitMQ, Kafka)"
   }
 ]
