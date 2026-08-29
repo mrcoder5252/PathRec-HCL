@@ -1,0 +1,66 @@
+skill_id,name,domain,prerequisites
+py_basics,Python Basics,backend,
+git_basics,Git & Version Control,backend,
+variables,Variables & Data Types,backend,py_basics
+loops,Loops & Conditionals,backend,variables
+functions,Functions,backend,loops
+oop,Object-Oriented Programming,backend,functions
+data_structures,Data Structures,backend,functions
+modules_packages,Modules & Packages,backend,functions
+file_io,File I/O,backend,functions
+exceptions_adv,Advanced Exception Handling,backend,error_handling
+decorators,Decorators & Closures,backend,functions
+generators,Generators & Iterators,backend,functions
+regex,Regular Expressions,backend,py_basics
+virtualenv,Virtual Environments & pip,backend,py_basics
+unit_testing,Unit Testing (pytest),backend,functions
+algorithms_basics,Algorithms Basics,backend,data_structures
+recursion,Recursion,backend,functions
+sql_basics,SQL Basics,backend,
+sql_joins,SQL Joins & Aggregations,backend,sql_basics
+db_design,Database Design,backend,sql_basics
+normalization,Database Normalization,backend,db_design
+indexing,Indexing & Query Optimization,backend,db_design
+orm,ORM Concepts,backend,db_design;oop
+sqlalchemy,SQLAlchemy Advanced Usage,backend,orm
+nosql_basics,NoSQL Basics (MongoDB),backend,sql_basics
+db_migrations,Database Migrations,backend,orm
+transactions,Transactions & ACID,backend,db_design
+http_basics,HTTP Basics,backend,
+rest_apis,REST API Design,backend,http_basics;functions
+api_versioning,API Versioning,backend,rest_apis
+flask_basics,Flask Framework,backend,rest_apis;oop
+fastapi_basics,FastAPI Framework,backend,rest_apis;oop
+django_basics,Django Framework,backend,rest_apis;oop
+serialization,Serialization (JSON/Pydantic),backend,rest_apis
+request_validation,Request Validation,backend,serialization
+auth,Authentication & Authorization,backend,rest_apis
+jwt_auth,JWT & OAuth2,backend,auth
+rate_limiting,Rate Limiting,backend,rest_apis
+api_testing,API Testing,backend,rest_apis
+api_docs,API Documentation (Swagger/OpenAPI),backend,rest_apis
+websockets,WebSockets Basics,backend,http_basics
+graphql_basics,GraphQL Basics,backend,rest_apis
+error_handling,Error Handling,backend,functions
+logging,Logging Best Practices,backend,error_handling
+caching,Caching Strategies,backend,system_design_basics
+redis_basics,Redis Basics,backend,caching
+message_queues,Message Queues (RabbitMQ/Kafka basics),backend,system_design_basics
+background_jobs,Background Jobs (Celery),backend,message_queues
+env_config,Environment Config & Secrets,backend,flask_basics
+deployment,Deployment Basics,backend,env_config
+docker_basics,Docker Basics,backend,deployment
+docker_compose,Docker Compose,backend,docker_basics
+ci_cd,CI/CD Pipelines,backend,docker_basics
+cloud_basics,Cloud Basics (AWS/GCP fundamentals),backend,deployment
+linux_basics,Linux & Shell Basics,backend,
+nginx_basics,Nginx & Reverse Proxies,backend,deployment
+system_design_basics,System Design Basics,backend,rest_apis;db_design
+load_balancing,Load Balancing,backend,system_design_basics
+microservices,Microservices Architecture,backend,system_design_basics;docker_basics
+scalability,Scalability Concepts,backend,system_design_basics
+security_basics,Web Security Basics,backend,auth
+input_sanitization,Input Sanitization & SQL Injection Prevention,backend,security_basics
+cors,CORS & Cross-Origin Handling,backend,http_basics
+monitoring,Monitoring & Alerting Basics,backend,logging
+version_control_adv,"Advanced Git (branching, rebase, CI hooks)",backend,git_basics

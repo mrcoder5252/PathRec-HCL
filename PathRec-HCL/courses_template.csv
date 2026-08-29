@@ -1,0 +1,64 @@
+course_id,title,provider,url,domain,skills_taught,level
+c1,Python for Everybody,Coursera,https://www.coursera.org/specializations/python,backend,py_basics;variables;loops;functions,beginner
+c2,Git & GitHub Crash Course,YouTube (freeCodeCamp),https://www.youtube.com/watch?v=RGOj5yH7evk,backend,git_basics,beginner
+c3,Object Oriented Programming in Python,Coursera,https://www.coursera.org/learn/python-object-oriented-programming,backend,oop,beginner
+c4,Data Structures and Algorithms in Python,edX,https://www.edx.org/learn/data-structures/university-of-california-san-diego-data-structures-and-algorithms,backend,data_structures;algorithms_basics;recursion,intermediate
+c5,SQL for Data Science,Coursera,https://www.coursera.org/learn/sql-for-data-science,backend,sql_basics;sql_joins,beginner
+c6,Database Design Fundamentals,Coursera,https://www.coursera.org/learn/database-design,backend,db_design;normalization,intermediate
+c7,SQLAlchemy ORM Tutorial,YouTube (Corey Schafer),https://www.youtube.com/watch?v=woKYyhLCcnU,backend,orm;sqlalchemy,intermediate
+c8,HTTP Crash Course,YouTube (Traversy Media),https://www.youtube.com/watch?v=iYM2zFP3Zn0,backend,http_basics,beginner
+c9,REST APIs with Flask and Python,Udemy,https://www.udemy.com/course/rest-api-flask-and-python/,backend,rest_apis;flask_basics,intermediate
+c10,Flask Web Development,Coursera,https://www.coursera.org/learn/python-flask,backend,flask_basics,intermediate
+c11,API Authentication and Authorization,Pluralsight,https://www.pluralsight.com/courses/api-authentication-authorization,backend,auth;jwt_auth,intermediate
+c12,Postman API Testing Crash Course,YouTube (freeCodeCamp),https://www.youtube.com/watch?v=VywxIQ2ZXw4,backend,api_testing,beginner
+c13,Python Exception Handling,Real Python,https://realpython.com/python-exceptions/,backend,error_handling;exceptions_adv,beginner
+c14,Environment Variables and Config Best Practices,YouTube (Tech With Tim),https://www.youtube.com/watch?v=IolxqkL7cD8,backend,env_config,intermediate
+c15,Deploying Flask Apps,Render Docs,https://render.com/docs/deploy-flask,backend,deployment,intermediate
+c16,Docker for Beginners,Docker Docs,https://docs.docker.com/get-started/,backend,docker_basics,beginner
+c17,System Design Basics for Beginners,YouTube (Gaurav Sen),https://www.youtube.com/watch?v=xpDnVSmNFX0,backend,system_design_basics,intermediate
+c18,Caching Strategies Explained,YouTube (ByteByteGo),https://www.youtube.com/watch?v=U3RkDLtS7uY,backend,caching;redis_basics,advanced
+c19,Python Modules and Packages,Real Python,https://realpython.com/python-modules-packages/,backend,modules_packages,beginner
+c20,Working with Files in Python,Real Python,https://realpython.com/read-write-files-python/,backend,file_io,beginner
+c21,Python Decorators and Closures,YouTube (Corey Schafer),https://www.youtube.com/watch?v=FsAPt_9Bf3U,backend,decorators;generators,intermediate
+c22,Python Regular Expressions Tutorial,YouTube (Corey Schafer),https://www.youtube.com/watch?v=K8L6KVGG-7o,backend,regex,beginner
+c23,Python Virtual Environments and pip,Real Python,https://realpython.com/python-virtual-environments-a-primer/,backend,virtualenv,beginner
+c24,Testing Python Applications with pytest,Test Automation University,https://testautomationu.applitools.com/pytest-tutorial/,backend,unit_testing,intermediate
+c25,SQL Joins Explained,YouTube (freeCodeCamp),https://www.youtube.com/watch?v=9yeOJ0ZMUYw,backend,sql_joins,beginner
+c26,Database Indexing and Query Optimization,YouTube (Hussein Nasser),https://www.youtube.com/watch?v=HubezKbFL7E,backend,indexing,intermediate
+c27,MongoDB Basics,MongoDB University,https://learn.mongodb.com/,backend,nosql_basics,beginner
+c28,Database Migrations with Alembic,YouTube (Very Academy),https://www.youtube.com/watch?v=2M1LTBRJKfQ,backend,db_migrations,intermediate
+c29,Database Transactions and ACID Explained,YouTube (Hussein Nasser),https://www.youtube.com/watch?v=pomxJOFVcQs,backend,transactions,intermediate
+c30,FastAPI Full Course,YouTube (freeCodeCamp),https://www.youtube.com/watch?v=0sOvCWFmrtA,backend,fastapi_basics;serialization;request_validation,intermediate
+c31,Django for Beginners,Coursera,https://www.coursera.org/learn/django,backend,django_basics,intermediate
+c32,API Versioning Strategies,Nordic APIs Blog,https://nordicapis.com/api-versioning-methods/,backend,api_versioning,intermediate
+c33,Rate Limiting Explained,YouTube (ByteByteGo),https://www.youtube.com/watch?v=mBjxxwB9UPQ,backend,rate_limiting,intermediate
+c34,Swagger & OpenAPI Documentation,YouTube (Traversy Media),https://www.youtube.com/watch?v=7XMKvpXKUvE,backend,api_docs,beginner
+c35,WebSockets Crash Course,YouTube (Traversy Media),https://www.youtube.com/watch?v=2Nt-ZrNP22A,backend,websockets,intermediate
+c36,GraphQL Basics,YouTube (freeCodeCamp),https://www.youtube.com/watch?v=ed8SzALpx1Q,backend,graphql_basics,intermediate
+c37,Logging Best Practices in Python,Real Python,https://realpython.com/python-logging/,backend,logging,intermediate
+c38,Redis Crash Course,YouTube (Traversy Media),https://www.youtube.com/watch?v=Hbt56gFj998,backend,redis_basics,intermediate
+c39,Message Queues with RabbitMQ,YouTube (freeCodeCamp),https://www.youtube.com/watch?v=Iap6oNJ7vgA,backend,message_queues,intermediate
+c40,Celery Background Jobs Tutorial,YouTube (Very Academy),https://www.youtube.com/watch?v=1yiuQdgfxAc,backend,background_jobs,intermediate
+c41,Docker Compose Tutorial,Docker Docs,https://docs.docker.com/compose/gettingstarted/,backend,docker_compose,intermediate
+c42,CI/CD with GitHub Actions,YouTube (TechWorld with Nana),https://www.youtube.com/watch?v=R8_veQiYBjI,backend,ci_cd,intermediate
+c43,AWS Cloud Practitioner Essentials,AWS Training,https://aws.amazon.com/training/digital/aws-cloud-practitioner-essentials/,backend,cloud_basics,beginner
+c44,Linux Command Line Basics,YouTube (freeCodeCamp),https://www.youtube.com/watch?v=zZLmNAf-eTU,backend,linux_basics,beginner
+c45,Nginx Crash Course,YouTube (Traversy Media),https://www.youtube.com/watch?v=q08pWirDrDA,backend,nginx_basics,intermediate
+c46,Load Balancing Explained,YouTube (ByteByteGo),https://www.youtube.com/watch?v=K0Ta65OqQkY,backend,load_balancing,intermediate
+c47,Microservices Architecture Explained,YouTube (ByteByteGo),https://www.youtube.com/watch?v=lTAcCNbJ7KQ,backend,microservices,advanced
+c48,Scalability Basics for Backend Systems,YouTube (Gaurav Sen),https://www.youtube.com/watch?v=xpDnVSmNFX0,backend,scalability,intermediate
+c49,Web Security Fundamentals,OWASP,https://owasp.org/www-project-top-ten/,backend,security_basics;input_sanitization,intermediate
+c50,Understanding CORS,YouTube (Web Dev Simplified),https://www.youtube.com/watch?v=4KHiSt0oLJ0,backend,cors,beginner
+c51,Monitoring and Alerting for Backend Apps,YouTube (TechWorld with Nana),https://www.youtube.com/watch?v=qJ7DzczxviU,backend,monitoring,intermediate
+c52,"Advanced Git: Branching, Rebase & Hooks",YouTube (freeCodeCamp),https://www.youtube.com/watch?v=qsTthZi23VE,backend,version_control_adv,intermediate
+c19,Python for Beginners,freeCodeCamp,https://www.youtube.com/watch?v=rfscVS0vtbw,backend,py_basics;variables;loops;functions,beginner
+c20,Python OOP Tutorial,YouTube (Corey Schafer),https://www.youtube.com/watch?v=ZDa-Z5JzLYM,backend,oop,beginner
+c21,Grokking Algorithms Course,Educative,https://www.educative.io/courses/grokking-algorithms,backend,algorithms_basics;data_structures,intermediate
+c22,SQL Tutorial for Beginners,freeCodeCamp,https://www.youtube.com/watch?v=HXV3zeQKqGY,backend,sql_basics,beginner
+c23,Database Design Fundamentals,Coursera,https://www.coursera.org/learn/database-design,backend,db_design;normalization,intermediate
+c24,Flask Mega-Tutorial,Miguel Grinberg,https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world,backend,flask_basics;rest_apis,intermediate
+c25,Django/Flask REST API Course,YouTube (Traversy Media),https://www.youtube.com/watch?v=qbLc5a9jdXo,backend,rest_apis,intermediate
+c26,JWT Authentication Explained,YouTube (Web Dev Simplified),https://www.youtube.com/watch?v=7Q17ubqLfaM,backend,auth,intermediate
+c27,Docker for Developers,YouTube (TechWorld with Nana),https://www.youtube.com/watch?v=3c-iBn73dDE,backend,docker_basics,beginner
+c28,Deploying Python Apps to Render,Render Docs,https://render.com/docs/deploy-flask,backend,deployment,intermediate
+c29,System Design Interview Basics,YouTube (ByteByteGo),https://www.youtube.com/watch?v=i53Gi_K3o7I,backend,system_design_basics,intermediate
