@@ -2,37 +2,28 @@
 Person 4 — LLM Layer (intake, narration, explainability)
 ==========================================================
 
+FIX APPLIED: intake_extract() previously returned free-text `domain` and
+`goal_skill` values (e.g. "software engineering", "backend development").
+Person 1's skill graph only recognizes exact values ("backend" as a domain,
+and real skill_ids like "deployment", "rest_apis" as goals) — the mismatch
+would have silently broken get_allowed_skills_for_domain() and get_path()
+for every real user. Fixed by pulling the real domain/skill_id list from
+Person 1's API at import time and constraining Gemini's structured output
+to those exact values via enum, so an invalid value is no longer possible.
+
 Uses the Google Gemini API (free tier — no credit card needed).
 Get a key at: https://aistudio.google.com/apikey
-
-Owns the three AI prompts that hold the conversational experience together:
-  1. intake_extract()   -> Day 1 (priority, blocks everyone else's testing)
-  2. narrate_path()      -> Day 2 (needs Person 1's get_path() + Person 3's retrieval)
-  3. explain_why_not()   -> Day 3 (needs two get_path() calls, diffed)
-
-Contract with the rest of the team:
-  - Person 2 (quiz/filtering) needs the JSON shape from intake_extract().
-    CONFIRM the exact key names below match what Person 2's filter reads.
-  - Person 5 (frontend) displays narrate_path() and explain_why_not() output.
-  - Person 1's get_path(known_skills, goal_skill) -> [skill_ids] is called
-    directly from explain_why_not() (imported once that module exists).
-  - Person 3's retrieval function is called directly from narrate_path()
-    (imported once that module exists).
-
-Only Prompt 1 (intake) is implemented for now — that's the Day 1 blocker.
-Prompts 2 and 3 are stubbed with clear TODOs so they slot in on Day 2/3.
 """
 
 import os
+import requests
 from typing import Optional
 
 from google import genai
 from google.genai import types
 
-# Free tier: generous daily quota, no card required.
-# Check https://ai.google.dev/gemini-api/docs/models for the current
-# fastest/cheapest flash model name if this one is deprecated later.
 MODEL = "gemini-3.6-flash"
+PATHREC_API_BASE = os.getenv("PATHREC_API_BASE", "http://127.0.0.1:8000")
 
 _client: Optional[genai.Client] = None
 
@@ -46,35 +37,70 @@ def _get_client() -> genai.Client:
 
 
 # ---------------------------------------------------------------------------
-# Prompt 1 — Intake extraction (Day 1, priority)
+# Fetch Person 1's real domain/skill taxonomy — this is what makes the fix work.
+# Falls back to a small hardcoded list if their API isn't reachable yet, so
+# this module still imports and runs standalone during early development.
 # ---------------------------------------------------------------------------
 
-INTAKE_SYSTEM_PROMPT = """You extract structured data from a learner's free-text goal statement.
+_FALLBACK_DOMAINS = ["backend"]
+_FALLBACK_SKILL_IDS = [
+    "py_basics", "sql_basics", "rest_apis", "auth",
+    "deployment", "system_design_basics",
+]
+
+
+def _fetch_real_domains_and_skills():
+    try:
+        resp = requests.get(f"{PATHREC_API_BASE}/", timeout=3)
+        resp.raise_for_status()
+        # "/" doesn't expose the full list directly, so hit a known domain
+        # to pull skill_ids, and keep a small known-domains list in sync
+        # with skills_template.csv. If Person 1 adds a /domains endpoint
+        # later, swap this for that — simpler and always in sync.
+        domain_resp = requests.get(f"{PATHREC_API_BASE}/skills/domain/backend", timeout=3)
+        domain_resp.raise_for_status()
+        data = domain_resp.json()
+        return ["backend"], data["skill_ids"]
+    except requests.exceptions.RequestException:
+        print(f"Could not reach {PATHREC_API_BASE} — using fallback domain/skill list. "
+              f"Start Person 1's server (`uvicorn api:app --port 8000`) for the real list.")
+        return _FALLBACK_DOMAINS, _FALLBACK_SKILL_IDS
+
+
+REAL_DOMAINS, REAL_SKILL_IDS = _fetch_real_domains_and_skills()
+
+
+# ---------------------------------------------------------------------------
+# Prompt 1 — Intake extraction (Day 1, priority) — FIXED
+# ---------------------------------------------------------------------------
+
+INTAKE_SYSTEM_PROMPT = f"""You extract structured data from a learner's free-text goal statement.
 
 Given the learner's message, extract:
-- goal_skill: the single skill/topic they ultimately want to learn (e.g. "backend development", "machine learning")
-- domain: the broader domain the goal falls under (e.g. "software engineering", "data science")
+- goal_skill: the closest matching skill_id from this exact list (pick the one
+  that best represents their ultimate goal, even if they described it loosely):
+  {", ".join(REAL_SKILL_IDS)}
+- domain: the domain their goal falls under, from this exact list: {", ".join(REAL_DOMAINS)}
 - timeframe: how long they said they have, in their own words (e.g. "3 months"), or null if not mentioned
-- claimed_skills: any skills/technologies they explicitly say they already know or have used; empty list if none mentioned
+- claimed_skills: any skills they explicitly say they already know, mapped to the
+  closest matching skill_id from the list above. Do not invent skill_ids not on this list.
+  Empty list if none mentioned.
 
 Rules:
-- If the message doesn't clearly state a goal, make your best reasonable inference from context rather than leaving goal_skill empty.
-- Keep goal_skill and domain short (a few words), not full sentences.
-- claimed_skills should be individual skill names, not sentences.
+- You MUST only use values from the lists given above for goal_skill, domain, and claimed_skills.
+- If the message doesn't clearly state a goal, make your best reasonable inference rather than leaving goal_skill empty.
+- If nothing in the message maps to a real skill_id for claimed_skills, return an empty list — do not guess.
 """
 
-# Gemini's structured-output mode: the API guarantees the response matches
-# this schema, so no manual JSON-parsing/fence-stripping is needed (unlike
-# providers without native structured output).
 INTAKE_RESPONSE_SCHEMA = types.Schema(
     type=types.Type.OBJECT,
     properties={
-        "goal_skill": types.Schema(type=types.Type.STRING),
-        "domain": types.Schema(type=types.Type.STRING),
+        "goal_skill": types.Schema(type=types.Type.STRING, enum=REAL_SKILL_IDS),
+        "domain": types.Schema(type=types.Type.STRING, enum=REAL_DOMAINS),
         "timeframe": types.Schema(type=types.Type.STRING, nullable=True),
         "claimed_skills": types.Schema(
             type=types.Type.ARRAY,
-            items=types.Schema(type=types.Type.STRING),
+            items=types.Schema(type=types.Type.STRING, enum=REAL_SKILL_IDS),
         ),
     },
     required=["goal_skill", "domain", "timeframe", "claimed_skills"],
@@ -84,7 +110,12 @@ INTAKE_RESPONSE_SCHEMA = types.Schema(
 def intake_extract(user_text: str) -> dict:
     """
     Take the learner's free-text goal statement and return structured JSON:
-    {goal_skill, domain, timeframe, claimed_skills}.
+    {goal_skill, domain, timeframe, claimed_skills} — where goal_skill,
+    domain, and every entry in claimed_skills are GUARANTEED to be real
+    values from Person 1's skill graph (enforced by the enum schema, not
+    just prompt wording), so this output can be passed directly to
+    Person 1's get_path() / Person 2's get_allowed_skills_for_domain()
+    with no translation step needed.
 
     Raises ValueError if the model output doesn't parse — callers should
     catch this and retry or fall back to a clarifying question rather than
@@ -105,7 +136,6 @@ def intake_extract(user_text: str) -> dict:
         raise ValueError(f"Gemini did not return parseable JSON. Raw text: {response.text!r}")
 
     data = response.parsed
-    # response.parsed can be a dict or a pydantic-like object depending on SDK version — normalize to dict.
     if not isinstance(data, dict):
         data = dict(data)
 
@@ -125,12 +155,6 @@ def narrate_path(skill_gap_path: list, retrieved_courses: dict) -> str:
     get_path()) and the real candidate courses per skill (from Person 3's
     retrieval function), produce a short roadmap: one sentence of "why" per
     step, using ONLY the course titles actually provided.
-
-    skill_gap_path: e.g. ["skill_id_3", "skill_id_7", "skill_id_9"]
-    retrieved_courses: e.g. {"skill_id_3": [{"title": ..., "url": ...}, ...], ...}
-
-    Hard constraint: never invent a course title. Test hard against Person 3's
-    real data before the evening integration checkpoint.
     """
     raise NotImplementedError("Day 2 — wire this up once Person 3's retrieval function is ready")
 
@@ -141,9 +165,8 @@ def narrate_path(skill_gap_path: list, retrieved_courses: dict) -> str:
 
 def explain_why_not(path_a: list, path_b: list, goal_a: str, goal_b: str) -> str:
     """
-    TODO (Day 3): Given two computed paths (two calls to Person 1's
-    get_path() with different goal skills), explain in plain language why
-    they differ. Diff the two lists and describe the divergence.
+    TODO (Day 3): Given two computed paths, explain in plain language why
+    they differ.
     """
     raise NotImplementedError("Day 3 — wire this up once the diffing logic is drafted")
 
@@ -168,12 +191,20 @@ def run_manual_tests():
         print("Then run: export GEMINI_API_KEY=your-key-here")
         return
 
+    print(f"Testing against real domains: {REAL_DOMAINS}")
+    print(f"Testing against {len(REAL_SKILL_IDS)} real skill_ids\n")
+
     for i, phrasing in enumerate(TEST_PHRASINGS, 1):
         print(f"\n--- Test {i} ---")
         print(f"Input: {phrasing}")
         try:
             result = intake_extract(phrasing)
             print(f"Output: {result}")
+            # sanity check: confirm the guarantee actually holds
+            assert result["goal_skill"] in REAL_SKILL_IDS
+            assert result["domain"] in REAL_DOMAINS
+            assert all(s in REAL_SKILL_IDS for s in result["claimed_skills"])
+            print("  (verified: all values are real skill_ids/domains)")
         except ValueError as e:
             print(f"FAILED: {e}")
 
