@@ -1,0 +1,186 @@
+[
+  {
+    "id": "q1",
+    "skill_id": "python_basics",
+    "difficulty": "easy",
+    "question": "What does the following code print? print(type([]))",
+    "options": ["<class 'list'>", "<class 'array'>", "<class 'tuple'>", "<class 'dict'>"],
+    "correct": "<class 'list'>"
+  },
+  {
+    "id": "q2",
+    "skill_id": "python_basics",
+    "difficulty": "medium",
+    "question": "Which of these correctly defines a function with a default argument?",
+    "options": ["def f(x=5): pass", "def f(x:=5): pass", "def f(x==5): pass", "function f(x=5) {}"],
+    "correct": "def f(x=5): pass"
+  },
+  {
+    "id": "q3",
+    "skill_id": "python_basics",
+    "difficulty": "hard",
+    "question": "What will `list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, range(6))))` return?",
+    "options": ["[0, 4, 16]", "[0, 1, 4, 9, 16, 25]", "[4, 16]", "[0, 2, 4]"],
+    "correct": "[0, 4, 16]"
+  },
+  {
+    "id": "q4",
+    "skill_id": "dbms",
+    "difficulty": "easy",
+    "question": "What does SQL stand for?",
+    "options": ["Structured Query Language", "Sequential Query Logic", "Structured Question Language", "Simple Query Language"],
+    "correct": "Structured Query Language"
+  },
+  {
+    "id": "q5",
+    "skill_id": "dbms",
+    "difficulty": "medium",
+    "question": "Which SQL clause is used to filter grouped results?",
+    "options": ["HAVING", "WHERE", "GROUP", "FILTER"],
+    "correct": "HAVING"
+  },
+  {
+    "id": "q6",
+    "skill_id": "dbms",
+    "difficulty": "hard",
+    "question": "What's the main difference between a LEFT JOIN and an INNER JOIN?",
+    "options": [
+      "LEFT JOIN includes unmatched rows from the left table; INNER JOIN doesn't",
+      "They are functionally identical",
+      "INNER JOIN is faster but returns duplicate rows",
+      "LEFT JOIN only works with a single table"
+    ],
+    "correct": "LEFT JOIN includes unmatched rows from the left table; INNER JOIN doesn't"
+  },
+  {
+    "id": "q7",
+    "skill_id": "rest_apis",
+    "difficulty": "easy",
+    "question": "Which HTTP method is typically used to retrieve data from a server?",
+    "options": ["GET", "SET", "PULL", "FETCH"],
+    "correct": "GET"
+  },
+  {
+    "id": "q8",
+    "skill_id": "rest_apis",
+    "difficulty": "medium",
+    "question": "What HTTP status code typically indicates a successful resource creation?",
+    "options": ["201", "200", "301", "404"],
+    "correct": "201"
+  },
+  {
+    "id": "q9",
+    "skill_id": "rest_apis",
+    "difficulty": "hard",
+    "question": "In REST API design, what makes an endpoint 'idempotent'?",
+    "options": [
+      "Calling it multiple times has the same effect as calling it once",
+      "It always returns the same response time",
+      "It requires authentication",
+      "It caches all responses automatically"
+    ],
+    "correct": "Calling it multiple times has the same effect as calling it once"
+  },
+  {
+    "id": "q10",
+    "skill_id": "auth",
+    "difficulty": "easy",
+    "question": "What does JWT stand for?",
+    "options": ["JSON Web Token", "Java Web Type", "Joint Web Transfer", "JSON Web Type"],
+    "correct": "JSON Web Token"
+  },
+  {
+    "id": "q11",
+    "skill_id": "auth",
+    "difficulty": "medium",
+    "question": "What's the main purpose of hashing a password before storing it?",
+    "options": [
+      "So the original password can't be recovered even if the database is leaked",
+      "To make login faster",
+      "To compress the password for storage",
+      "To encrypt it so it can be decrypted later for the user"
+    ],
+    "correct": "So the original password can't be recovered even if the database is leaked"
+  },
+  {
+    "id": "q12",
+    "skill_id": "auth",
+    "difficulty": "hard",
+    "question": "In OAuth 2.0, what is the purpose of a refresh token?",
+    "options": [
+      "To obtain a new access token without re-authenticating the user",
+      "To store the user's password securely",
+      "To encrypt API requests",
+      "To validate the user's email address"
+    ],
+    "correct": "To obtain a new access token without re-authenticating the user"
+  },
+  {
+    "id": "q13",
+    "skill_id": "deployment",
+    "difficulty": "easy",
+    "question": "What is Docker primarily used for?",
+    "options": ["Packaging applications into containers", "Writing frontend code", "Managing databases only", "Sending emails"],
+    "correct": "Packaging applications into containers"
+  },
+  {
+    "id": "q14",
+    "skill_id": "deployment",
+    "difficulty": "medium",
+    "question": "What's the purpose of an environment variable in deployment?",
+    "options": [
+      "Storing config/secrets outside the codebase so they differ per environment",
+      "Speeding up the CPU",
+      "Formatting code automatically",
+      "Compiling the app faster"
+    ],
+    "correct": "Storing config/secrets outside the codebase so they differ per environment"
+  },
+  {
+    "id": "q15",
+    "skill_id": "deployment",
+    "difficulty": "hard",
+    "question": "What does 'horizontal scaling' mean in a deployed backend system?",
+    "options": [
+      "Adding more machines/instances to handle load",
+      "Upgrading a single server's RAM and CPU",
+      "Reducing the size of the database",
+      "Compressing API responses"
+    ],
+    "correct": "Adding more machines/instances to handle load"
+  },
+  {
+    "id": "q16",
+    "skill_id": "system_design_basics",
+    "difficulty": "easy",
+    "question": "What is a 'load balancer' used for?",
+    "options": [
+      "Distributing incoming traffic across multiple servers",
+      "Balancing code indentation",
+      "Storing user sessions",
+      "Compressing images"
+    ],
+    "correct": "Distributing incoming traffic across multiple servers"
+  },
+  {
+    "id": "q17",
+    "skill_id": "system_design_basics",
+    "difficulty": "medium",
+    "question": "Why might you introduce a cache (like Redis) in a backend system?",
+    "options": [
+      "To reduce repeated load on the database and speed up frequent reads",
+      "To permanently store all application data",
+      "To replace the need for a database entirely",
+      "To handle user authentication"
+    ],
+    "correct": "To reduce repeated load on the database and speed up frequent reads"
+  },
+  {
+    "id": "q18",
+    "skill_id": "system_design_basics",
+    "difficulty": "hard",
+    "question": "In a microservices architecture, what's a common way services communicate asynchronously?",
+    "options": ["Message queues (e.g. RabbitMQ, Kafka)", "Direct SQL queries between services", "Shared global variables", "Copy-pasting data files"],
+    "correct": "Message queues (e.g. RabbitMQ, Kafka)"
+  }
+]
