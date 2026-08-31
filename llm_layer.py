@@ -151,24 +151,84 @@ def intake_extract(user_text: str) -> dict:
 
 def narrate_path(skill_gap_path: list, retrieved_courses: dict) -> str:
     """
-    TODO (Day 2): Given the ordered list of skill gaps (from Person 1's
-    get_path()) and the real candidate courses per skill (from Person 3's
-    retrieval function), produce a short roadmap: one sentence of "why" per
-    step, using ONLY the course titles actually provided.
+    Given the ordered list of skill gaps and real candidate courses per skill,
+    produce a clear, encouraging roadmap explanation.
     """
-    raise NotImplementedError("Day 2 — wire this up once Person 3's retrieval function is ready")
+    if not skill_gap_path:
+        return "You already have all the prerequisite skills for this goal! You are ready to start building advanced projects."
+
+    steps_summary = []
+    for s in skill_gap_path:
+        sid = s if isinstance(s, str) else s.get("skill_id", "")
+        name = s.get("name", sid) if isinstance(s, dict) else sid
+        course_info = retrieved_courses.get(sid, [])
+        course_name = course_info[0]["title"] if course_info and isinstance(course_info, list) else "Recommended Course"
+        steps_summary.append(f"- {name}: through '{course_name}'")
+
+    summary_text = "\n".join(steps_summary)
+
+    if os.environ.get("GEMINI_API_KEY"):
+        try:
+            client = _get_client()
+            prompt = f"""You are an expert career counselor. Given this learning roadmap sequence:
+{summary_text}
+
+Provide a concise, motivating 2-3 sentence overview explaining the learning progression and why these steps are sequenced in this order. Use only the provided steps/courses."""
+            resp = client.models.generate_content(
+                model=MODEL,
+                contents=prompt
+            )
+            if resp.text:
+                return resp.text.strip()
+        except Exception:
+            pass
+
+    return f"This roadmap starts with fundamental prerequisites and progresses towards your goal through {len(skill_gap_path)} focused milestones:\n{summary_text}"
 
 
 # ---------------------------------------------------------------------------
-# Prompt 3 — "Why not X?" explainer (Day 3) — STUB
+# Prompt 3 — "Why not X?" explainer (Day 3) — IMPLEMENTED
 # ---------------------------------------------------------------------------
 
 def explain_why_not(path_a: list, path_b: list, goal_a: str, goal_b: str) -> str:
     """
-    TODO (Day 3): Given two computed paths, explain in plain language why
-    they differ.
+    Given two computed paths to goal A and goal B, explains in plain language
+    why they differ, what skills are shared, and what makes goal B unique.
     """
-    raise NotImplementedError("Day 3 — wire this up once the diffing logic is drafted")
+    ids_a = {s if isinstance(s, str) else s.get("skill_id", "") for s in path_a}
+    ids_b = {s if isinstance(s, str) else s.get("skill_id", "") for s in path_b}
+
+    shared = ids_a & ids_b
+    only_a = ids_a - ids_b
+    only_b = ids_b - ids_a
+
+    if os.environ.get("GEMINI_API_KEY"):
+        try:
+            client = _get_client()
+            prompt = f"""Compare two career learning paths:
+Primary Goal ({goal_a}): {len(path_a)} steps required. Unique skills: {', '.join(only_a) or 'None'}.
+Alternative Goal ({goal_b}): {len(path_b)} steps required. Unique skills: {', '.join(only_b) or 'None'}.
+Shared prerequisites: {', '.join(shared) or 'None'}.
+
+In 2 concise sentences, explain to the learner why these two paths diverge and what extra effort choosing {goal_b} involves compared to {goal_a}."""
+            resp = client.models.generate_content(
+                model=MODEL,
+                contents=prompt
+            )
+            if resp.text:
+                return resp.text.strip()
+        except Exception:
+            pass
+
+    # Fallback explanation
+    diff_text = f"Goal '{goal_a}' requires {len(path_a)} steps, while '{goal_b}' requires {len(path_b)} steps. "
+    if shared:
+        diff_text += f"Both paths share {len(shared)} foundation skills ({', '.join(list(shared)[:3])}). "
+    if only_b:
+        diff_text += f"Switching to '{goal_b}' will specifically require mastering {', '.join(list(only_b)[:3])}."
+    else:
+        diff_text += f"'{goal_b}' is a subset of your current track."
+    return diff_text
 
 
 # ---------------------------------------------------------------------------

@@ -8,8 +8,9 @@ Checks the two scenarios explicitly called out in the team plan:
 score on edge cases (e.g. all-wrong or all-right answers)."
 """
  
+import os
 import sys
-sys.path.insert(0, r"..\Quiz_Engine")
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "Quiz_Engine"))
 
 from quiz_engine import StaircaseQuiz, QUESTION_BANK
 def run_all_wrong():

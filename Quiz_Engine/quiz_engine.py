@@ -9,11 +9,16 @@ import json
 import random
 import requests
 from dotenv import load_dotenv
-import google.generativeai as genai
- 
+
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-3.6-flash")
+
+_genai_client = None
+def _get_genai_client():
+    global _genai_client
+    if _genai_client is None and os.getenv("GEMINI_API_KEY"):
+        from google import genai
+        _genai_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+    return _genai_client
  
 # ---------------------------------------------------------------------------
 # 1. Load the question bank
@@ -168,8 +173,17 @@ def merge_confidence(quiz_confidence, text_confidence):
 # ---------------------------------------------------------------------------
  
 def real_llm_call(prompt):
-    response = model.generate_content(prompt)
-    return response.text
+    client = _get_genai_client()
+    if client:
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            return response.text or "{}"
+        except Exception:
+            return "{}"
+    return "{}"
  
  
 # ---------------------------------------------------------------------------
